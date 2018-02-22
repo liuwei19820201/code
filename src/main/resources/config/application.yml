@@ -1,0 +1,108 @@
+server:
+  port: 8010
+spring:
+  application:
+    name: microservice-consumer-movie-rabbitMQ # 用于指定注册到Eureka Server 上的应用名称
+
+#  boot:
+#    admin:
+#      client:
+#        prefer-ip: true # 解决windows下运行时无法识别主机名的问题
+#      url: http://localhost:8090 # 向服务端注册的地址
+
+  jpa:
+    database: mysql
+    generate-ddl: false
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+  datasource:
+    platform: mysql
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/test?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
+    username: root
+    password: root
+    hikari:
+      maximum-pool: 20
+      connection-test-query: SELECT 1
+      connection-timeout: 60000
+    jdbc-interceptors: ConnectionState;SlowQueryReport(threshold=2000)
+
+  profiles:
+      active: test
+
+#  redis:
+#      database: 0
+#      host: 127.0.0.1
+#      port: 20005
+#      timeout: 6000
+#      password: myredis
+#      pool:
+#        # 连接池最大连接数（使用负值表示没有限制）
+#        max-active: 1000
+#        # 连接池中的最大空闲连接
+#        max-idle: 100
+#        # 连接池中的最小空闲连接
+#        min-idle: 20
+#        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+#        max-wait: -1
+
+endpoints:
+  shutdown:
+    enabled: true
+
+mybatis:
+  mapperLocations: classpath:mybatis/mappers/*.xml
+  typeAliasesPackage: com.example.demo.mybatis.po
+#logging:
+  #level:
+    #root: INFO
+    #org.hibernate: INFO
+    #org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    #org.hibernate.type.descriptor.sql.BasicExtractor: TRACE
+info: #定义各种额外的详情给服务端显示
+  app:
+    name: microservice-consumer-movie-rabbitMQ #从pom.xml中获取
+    description: microservice-consumer-movie-rabbitMQ
+    version: 1.0
+    spring-boot-version: 1.0
+
+security:
+  basic:
+    enabled: true
+    path: /
+  user:
+    name: admin
+    password: admin
+
+user:
+  userServiceUrl: http://localhost:8010/user/
+
+logging:
+  config: classpath:config/logback.xml
+#  level:
+#    org:
+#      springframework: WARN
+#      spring:
+#        springboot:
+#          dao: DEBUG
+
+
+#dynamic control for auto package of the app
+##################################################
+dynamic.app: ph-ws
+##################ws project######################
+ws:
+  schedule:
+    run: false
+  rabbitmq:
+    lw:
+      producer: true
+      consumer: true
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: http://admin:admin@localhost:8761/eureka/
+#  instance:
+#    prefer-ip-address: true  # 表示将自己的ip注册到Eureka Server.如不配置该属性或将其设置为false，则表示注册为服务所在的操作系统的hostname到Erekau Server.

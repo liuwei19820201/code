@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+
+
+    <!--log变量定义-->
+    <property name="log.dir" value="/data/logs/test" />
+    <property name="log.context.name" value="temp" />
+    <property name="log.charset" value="UTF-8" />
+    <property name="log.pattern"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%logger{36}:%line] - %msg%n"></property>
+
+    <!--hibernate log configure-->
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" />
+    <logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="DEBUG" />
+    <logger name="org.hibernate.SQL" level="DEBUG" />
+    <logger name="org.hibernate.engine.QueryParameters" level="DEBUG" />
+    <logger name="org.hibernate.engine.query.HQLQueryPlan" level="DEBUG" />
+
+    <!--third jar log configure-->
+    <logger name="org" level="INFO"/>
+    <logger name="ch.qos.logback" level="ERROR"/>
+
+    <!--ignore hikari error log output of hot deploy,may be bug-->
+    <logger name="com.zaxxer.hikari.pool.HikariPool" level="OFF"/>
+
+    <!--biz log configure-->
+    <logger name="com.example.demo.mybatis.mapper" level="DEBUG"/>
+
+
+    <!--console日志输出器-->
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>${log.charset}</charset>
+        </encoder>
+    </appender>
+
+    <!--roll日志输出器-->
+    <appender name="roll" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--log文件名-->
+        <file>${log.dir}/${log.context.name}/${log.context.name}.log</file>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+            <charset>${log.charset}</charset>
+        </encoder>
+        <!--日志滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--非当天的log文件压缩备份为zip文件-->
+            <fileNamePattern>${log.dir}/${log.context.name}/archive/${log.context.name}.%d{yyyy-MM-dd}-%i.log.zip</fileNamePattern>
+            <!--日志文件最大的大小 默认10M-->
+            <maxFileSize>200MB</maxFileSize>
+            <!--超过360天的备份文件会被删除-->
+            <maxHistory>360</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!--开发环境使用-->
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="stdout"/>
+        </root>
+    </springProfile>
+
+    <!--测试环境使用-->
+    <springProfile name="test">
+        <root level="INFO">
+            <appender-ref ref="stdout"/>
+            <appender-ref ref="roll"/>
+        </root>
+    </springProfile>
+
+    <!--UAT环境使用-->
+    <springProfile name="uat">
+        <root level="INFO">
+            <appender-ref ref="roll"/>
+        </root>
+    </springProfile>
+
+    <!--生产环境使用-->
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="roll"/>
+        </root>
+    </springProfile>
+
+</configuration>

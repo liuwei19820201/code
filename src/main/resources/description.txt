@@ -1,0 +1,6 @@
+spring-boot
+1、jpa
+2、mybatis
+3、mongodb
+4、rabbitMq
+5、swagger
