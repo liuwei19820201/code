@@ -1,0 +1,122 @@
+buildscript {
+    ext {
+        springBootVersion = '1.5.9.RELEASE'
+    }
+    repositories {
+        /*
+        mavenLocal() 表示会从本地获取资源，获取资源的顺序为
+        %USER_HOME%/.m2/settings.xml中指定的路径
+        %M2_HOME%/conf/settings.xml中指定的路径
+        %USER_HOME%/.m2/repository。
+        */
+        mavenLocal() //添加Maven本地资源库
+        mavenCentral() //添加Maven中央资源库
+        //除上述2种外，gradle还可以从指定的URL获取资源
+        maven{ url "http://nexus.yingu.com/nexus/content/repositories/central/"}
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.springframework:springloaded:1.2.0.RELEASE")
+//    classpath("nz.org.geonet:gradle-build-version-plugin:1.0.4")
+        classpath("io.spring.gradle:dependency-management-plugin:0.5.6.RELEASE")
+    }
+}
+
+apply plugin: 'java' //添加Java插件
+apply plugin: 'maven' //添加Maven插件
+apply plugin: 'eclipse'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+jar {
+    baseName = 'spring-cloud-service'
+    version =  '0.0.1'
+}
+
+ext {
+    springCloudVersion = 'Edgware.RELEASE'
+}
+
+dependencyManagement {
+    imports {
+        //mavenBom 'org.springframework.cloud:spring-cloud-netflix:1.2.0.M1'
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+group 'org.springframework.boot'
+version '1.0-SNAPSHOT'
+
+//分别指定开发环境和编译使用的JDK版本
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    maven { url "https://repo.spring.io/libs-milestone" }
+//	jcenter() Android开源项目的代码托管仓库
+    mavenLocal()
+    mavenCentral()
+    maven{ url "https://plugins.gradle.org/m2/"}
+    maven{ url "https://maven.eveoh.nl/content/repositories/releases"}
+    maven{ url "http://nexus.yingu.com/nexus/content/repositories/central/"}
+}
+
+/*
+compile：编译时必须。
+runtime：运行时必须，包括编译时。
+testCompile：测试编译时必须。
+testRuntime：测试运行时必须，包括编译时。
+ */
+
+/*
+spring-cloud-starter-parent 具备spring-boot-starter-parent同样功能并附加Spring Cloud的依赖
+spring-cloud-starter-config 默认的配置服务依赖，快速自动引入服务的方式，端口8888
+spring-cloud-config-server／client 用户自定义配置服务的服务端／客户端依赖
+spring-cloud-starter-eureka-server 服务发现的Eureka Server依赖
+spring-cloud-starter-eureka 服务发现的Eureka客户端依赖
+spring-cloud-starter-hystrix／zuul／feign／ribbon 断路器（Hystrix），智能路有（Zuul），客户端负载均衡（Ribbon）的依赖
+angular-ui-router 页面分发路由依赖
+ */
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    //compile("org.springframework.cloud:spring-cloud-starter-parent:Brixton.SR4")
+//    compile('org.springframework.cloud:spring-cloud-starter-eureka-server')
+    compile("de.codecentric:spring-boot-admin-starter-client:1.5.0")
+//    compile("org.springframework.boot:spring-boot-starter-security")
+    //compile("org.springframework.cloud:spring-cloud-config-server")
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-jdbc')
+    compile('org.springframework.boot:spring-boot-starter-amqp')
+    compile("org.springframework.boot:spring-boot-starter-cache")
+    compile('org.springframework.boot:spring-boot-starter-data-redis')
+    compile('org.mybatis.spring.boot:mybatis-spring-boot-starter:1.2.0')
+    compile('org.springframework.session:spring-session-data-redis')
+// compile('tk.mybatis:mapper-spring-boot-starter')
+    compile('com.zaxxer:HikariCP')
+    compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+    compile('org.springframework.boot:spring-boot-starter-tomcat')
+    runtime('mysql:mysql-connector-java')
+// compile('org.mybatis:mybatis-spring:1.2.2')
+// compile('org.mybatis:mybatis:3.2.8')
+// compile('org.springframework.boot:spring-boot-configuration-processor')
+    compile('com.alibaba:fastjson:1.2.17')
+    compile('com.thoughtworks.xstream:xstream:1.4.7')
+    compile 'org.apache.commons:commons-collections4:4.0'
+    compile 'org.apache.commons:commons-lang3:3.6'
+
+    //ibeetl
+    compile('com.ibeetl:beetl-framework-starter:1.1.22.RELEASE')
+
+    compile('org.projectlombok:lombok:1.16.4')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    //swagger
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.6.1'
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.6.1'
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.6.6'
+    compile group: 'joda-time', name: 'joda-time', version: '2.9.3'
+}
